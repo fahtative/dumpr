@@ -6,7 +6,7 @@
   :source-paths ["src"]
 
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/core.async "0.2.374"]
+                 [org.clojure/core.async "1.6.681"]
                  [org.clojure/tools.logging "0.3.1"]
                  [mysql/mysql-connector-java "8.0.33"]
                  [org.clojure/java.jdbc "0.6.1"]
