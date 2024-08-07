@@ -327,7 +327,8 @@
                          :out-stream (->connected-source out-ch)
                          :started? (atom nil)}))
 
-(defrecord BinlogStream [conf client out-stream started? stopped?]
+(defrecord BinlogStream [conf client out-stream started? stopped?
+                         out-ch schema-loaded-ch]
   IStartable
   (start! [_]
     (when-not @started?
@@ -337,9 +338,11 @@
 
   IStoppable
   (stop! [_]
+    (manifold.stream/close! out-stream)
+    (async/close! out-ch)
+    (async/close! schema-loaded-ch)
     (when (and @started? (not @stopped?))
       (binlog/stop-client client)
-      (manifold.stream/close! out-stream)
       (reset! stopped? true)))
 
   ISourceable
@@ -375,7 +378,9 @@
                           cat)
                     schema-loaded-ch)
 
-    (map->BinlogStream {:conf conf
+    (map->BinlogStream {:out-ch out-ch
+                        :schema-loaded-ch schema-loaded-ch
+                        :conf conf
                         :client client
                         :out-stream (->connected-source out-ch)
                         :started? started?
